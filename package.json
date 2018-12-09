@@ -1,0 +1,24 @@
+{
+  "name": "bamazon",
+  "version": "1.0.0",
+  "description": "A CLI based storefront",
+  "main": "bamazon.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eghove/bamazon.git"
+  },
+  "author": "Eric Hove",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/eghove/bamazon/issues"
+  },
+  "homepage": "https://github.com/eghove/bamazon#readme",
+  "dependencies": {
+    "dotenv": "^6.2.0",
+    "inquirer": "^6.2.1",
+    "mysql": "^2.16.0"
+  }
+}
