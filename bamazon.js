@@ -35,7 +35,7 @@ function openConnection() {
 //close connection function
 function closeConnection() {
     connection.end();
-    // console.log("Connection closed.");
+    console.log("Connection closed.");
 }
 
 //display inventory function
@@ -51,7 +51,7 @@ function displayInventory() {
             }
             firstPrompt();
         });
-    closeConnection();
+    // closeConnection();
 }
 
 //first prompt function
@@ -62,19 +62,56 @@ function firstPrompt() {
                 name: "buyThis",
                 type: "input",
                 message: "Please enter the Product ID of the item you would like to buy.",
+                validate: function (value) {
+                    if (isNaN(value) === false) {
+                        return true;
+                    }
+                    return "Please enter a number.";
+                }
             },
 
             {
                 name: "quantity",
                 type: "input",
                 message: "Please enter the quantity you would like to buy.",
+                validate: function (value) {
+                    if (isNaN(value) === false) {
+                        return true;
+                    }
+                    return "Please enter a number.";
+                }
             }
         ])
         .then(function (answer) {
-            // based on their answer, either call the bid or the post functions
-            console.log(answer.buyThis);
-            console.log(answer.quantity);
+
+            // console.log(answer.buyThis);
+            // console.log(answer.quantity);
+            checkQuantity(answer.buyThis, answer.quantity);
+            
         });
+}
+
+//function that checks if there is sufficient quantity ramaining
+function checkQuantity(param1, param2) {
+    connection.query("SELECT stock_quantity FROM products WHERE item_id = ?",
+        [param1],
+        function (err, result) {
+            if (err) {
+                closeConnection();
+                throw err;
+            }
+            else {
+                if (param2 > result[0].stock_quantity) {
+                    console.log("Insufficient quantity remaining!");
+                    closeConnection();
+                } else {
+                    console.log("Yeah, you can buy that");
+                    closeConnection();
+                }
+                
+            }
+        }
+    )
 }
 
 
