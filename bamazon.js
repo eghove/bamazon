@@ -28,14 +28,14 @@ let connection = mysql.createConnection({
 function openConnection() {
     connection.connect(function (err) {
         if (err) throw err;
-        console.log("connected as id " + connection.threadId);
+        // console.log("connected as id " + connection.threadId);
     });
 }
 
 //close connection function
 function closeConnection() {
     connection.end();
-    console.log("Connection closed.");
+    console.log("Connection closed. Thanks for visiting BAMAZON!");
 }
 
 //display inventory function
@@ -87,7 +87,7 @@ function firstPrompt() {
             // console.log(answer.buyThis);
             // console.log(answer.quantity);
             checkQuantity(answer.buyThis, answer.quantity);
-            
+
         });
 }
 
@@ -105,21 +105,55 @@ function checkQuantity(param1, param2) {
                     console.log("Insufficient quantity remaining!");
                     closeConnection();
                 } else {
-                    console.log("Yeah, you can buy that");
-                    closeConnection();
+                    // console.log("Yeah, you can buy that");
+                    placeOrder(param1, param2);
+                    // closeConnection();
                 }
-                
             }
         }
     )
 }
 
+//function that places the order
+function placeOrder(param1, param2) {
+    // console.log(param1);
+    // console.log(param2);
+    connection.query("SELECT * FROM products WHERE item_id = ?",
+        [param1],
+        function (err, result) {
+            if (err) {
+                closeConnection();
+                throw err;
+            } else {
+                //determines the total cost
+                let totalCost = param2 * result[0].price;
+                //grabs the total stock
+                let totalStock = result[0].stock_quantity;
+                //sets the remaining stock after the purchase
+                let remainingStock = totalStock - param2;
+                //updates the database with new stock amount
+                connection.query("UPDATE products SET ? WHERE ?",
+                    [
+                        {
+                            stock_quantity: remainingStock
+                        },
 
+                        {
+                            item_id: param1
+                        }
+                    ],
 
+                    function (err) {
+                        if (err) throw err;
+                        console.log("Total Cost for Your Order: $" + totalCost + ".");
+                        closeConnection();
+                    }
 
-
-
-
+                )
+            }
+        }
+    )
+}
 
 function start() {
     displayInventory();
