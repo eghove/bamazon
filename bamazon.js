@@ -53,6 +53,41 @@ function displayInventory() {
     closeConnection();
 }
 
+//first prompt function
+function firstPrompt() {
+    inquirer
+        .prompt([
+            {
+                name: "buyThis",
+                type: "input",
+                message: "Please enter the Product ID of the item you would like to buy.",
+            },
+
+            {
+                name: "quantity",
+                type: "input",
+                message: "Please enter the quantity you would like to buy.",
+            }
+        ])
+        .then(function (answer) {
+            // based on their answer, either call the bid or the post functions
+            console.log(answer.buyThis);
+            console.log(answer.quanitity);
+        });
+}
+
+
+
+
+
+
+
+
+function start() {
+    displayInventory();
+}
+
+
 
 
 
@@ -61,4 +96,4 @@ function displayInventory() {
 
 //==MAIN PROCESSES=========================================
 
-displayInventory();
+start();
