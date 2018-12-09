@@ -49,6 +49,7 @@ function displayInventory() {
             for (let i = 0; i < res.length; i++) {
                 console.log("Product ID: " + res[i].item_id + " || " + "Product Name: " + res[i].product_name + " || " + "Price: " + res[i].price);
             }
+            firstPrompt();
         });
     closeConnection();
 }
@@ -72,7 +73,7 @@ function firstPrompt() {
         .then(function (answer) {
             // based on their answer, either call the bid or the post functions
             console.log(answer.buyThis);
-            console.log(answer.quanitity);
+            console.log(answer.quantity);
         });
 }
 
