@@ -105,9 +105,8 @@ function checkQuantity(param1, param2) {
                     console.log("Insufficient quantity remaining!");
                     closeConnection();
                 } else {
-                    // console.log("Yeah, you can buy that");
                     placeOrder(param1, param2);
-                    // closeConnection();
+                    
                 }
             }
         }
