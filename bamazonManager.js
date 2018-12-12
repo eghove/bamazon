@@ -44,7 +44,7 @@ function menuPrompt() {
             {
                 name: "managerPrompt",
                 type: "list",
-                message: "Welcome BAMAZON Manager! What would you like to do?",
+                message: "\nWelcome BAMAZON Manager! What would you like to do?",
                 choices: [
                     "View Products for Sale",
                     "View Low Inventory",
@@ -56,6 +56,7 @@ function menuPrompt() {
         )
         .then(function (answer) {
             // console.log(answer.managerPrompt);
+            // openConnection();
             switch (answer.managerPrompt) {
                 case "View Products for Sale":
                     console.log("View Products for Sale Selected");
@@ -64,18 +65,22 @@ function menuPrompt() {
 
                 case "View Low Inventory":
                     console.log("View Low Inventory Selected");
+                    viewLowInventory();
                     break;
 
                 case "Add to Inventory":
                     console.log("Add to Inventory Selected");
+                    addInventory();
                     break;
 
                 case "Add New Product":
                     console.log("Add New Product Selected");
+                    addProduct();
                     break;
 
                 case "Exit Program":
                     console.log("Exiting Program! Thank you for your hard work!");
+                    closeConnection();
                     break;
 
                 default:
@@ -86,18 +91,56 @@ function menuPrompt() {
 
 //list every available item: the item IDs, names, prices, and quantities
 function viewProducts() {
-    openConnection();
+    
     connection.query("SELECT item_id, product_name, price, stock_quantity FROM products",
         function (err, res) {
             if (err) throw err;
             for (let i = 0; i < res.length; i++) {
                 console.log("Product ID: " + res[i].item_id + " || " + "Product Name: " + res[i].product_name + " || " + "Price: " + res[i].price + " || " + "Quantity: " + res[i].stock_quantity);
             }
-            closeConnection();
+            
             menuPrompt();
         }
     )
 }
+
+// list all items with an inventory count lower than five
+function viewLowInventory() {
+   
+    connection.query("SELECT item_id, product_name, stock_quantity FROM products WHERE stock_quantity < 5",
+        function (err, res) {
+            if (err) throw err;
+            if (res.length===0) {
+                console.log("No items with stock less than 5 items!");
+            } else {
+                for (let i = 0; i < res.length; i++) {
+                    console.log("Product ID: " + res[i].item_id + " || " + "Product Name: " + res[i].product_name + " || " + "Quantity: " + res[i].stock_quantity);
+                }
+            };
+            menuPrompt();
+        }
+    )
+}
+
+//display a prompt that will let the manager "add more" of any item currently in the store.
+function addInventory() {
+
+    menuPrompt()
+};
+
+
+//allow the manager to add a completely new product to the store
+function addProduct() {
+    
+    menuPrompt()
+};
+
+//logic for the first run
+function initialize () {
+    //open the first connection
+    openConnection();
+    menuPrompt();
+};
 //==MAIN PROCESSES=========================================
 
-menuPrompt();
+initialize();
