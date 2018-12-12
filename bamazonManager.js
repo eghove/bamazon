@@ -38,5 +38,46 @@ function closeConnection() {
     console.log("Connection closed. Thanks for visiting BAMAZON!");
 }
 
+function menuPrompt() {
+    inquirer
+        .prompt(
+            {
+                name: "managerPrompt",
+                type: "list",
+                message: "Welcome BAMAZON Manager! What would you like to do?",
+                choices: [
+                    "View Products for Sale",
+                    "View Low Inventory",
+                    "Add to Inventory",
+                    "Add New Product"
+                ]
+            }
+        )
+        .then(function (answer) {
+            // console.log(answer.managerPrompt);
+            switch (answer.managerPrompt) {
+                case "View Products for Sale":
+                    console.log("Products for Sale Selected");
+                    break;
 
-////==MAIN PROCESSES=========================================
+                case "View Low Inventory":
+                    console.log("View Low Inventory Selected");
+                    break;
+
+                case "Add to Inventory":
+                    console.log("Add to Inventory Selected");
+                    break;
+
+                case "Add New Product":
+                    console.log("Add New Product Selected");
+                    break;
+
+                default:
+                    break;
+            }
+        })
+}
+
+//==MAIN PROCESSES=========================================
+
+menuPrompt();
