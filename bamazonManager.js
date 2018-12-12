@@ -158,14 +158,52 @@ function addInventory() {
             if (err) throw err;
             //tell the user what they are about to do
             console.log("You are re-stocking: " + res[0].product_name + " with " + answer.howMuch + " additional units.");
+            let newTotalStock = parseInt(res[0].stock_quantity) + parseInt(answer.howMuch);
+            
+            updateDB(newTotalStock, answer.stockThis);
 
             //this menu prompt will likely be moved
-            menuPrompt()
+            // menuPrompt()
         })
     })
 };
 
-function updateDB () {
+function updateDB (param1, param2) {
+    let temp = parseInt(param1);
+    inquirer
+    .prompt(
+        {
+            name: "confirm",
+            type: "confirm",
+            message: "Are you sure you want to make this change?"
+        }
+    ).then(function(answer) {
+        if(answer.confirm) {
+            
+            connection.query("UPDATE products SET ? WHERE ?",
+            [
+                {
+                    stock_quantity: temp
+                },
+
+                {
+                    item_id: param2
+                }
+            ],
+            function(err) {
+                if (err) throw err;
+                console.log("Database updated!");
+                menuPrompt();
+            }
+            
+
+            )
+        } else {
+            console.log("Aborting update! Returning to main menu...");
+            menuPrompt();
+        }
+    }
+    )
     
 }
 
