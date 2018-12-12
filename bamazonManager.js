@@ -35,7 +35,7 @@ function openConnection() {
 //close connection function
 function closeConnection() {
     connection.end();
-    console.log("Connection closed. Thanks for visiting BAMAZON!");
+    // console.log("Connection closed. Thanks for visiting BAMAZON!");
 }
 
 function menuPrompt() {
@@ -49,7 +49,8 @@ function menuPrompt() {
                     "View Products for Sale",
                     "View Low Inventory",
                     "Add to Inventory",
-                    "Add New Product"
+                    "Add New Product",
+                    "Exit Program"
                 ]
             }
         )
@@ -57,7 +58,8 @@ function menuPrompt() {
             // console.log(answer.managerPrompt);
             switch (answer.managerPrompt) {
                 case "View Products for Sale":
-                    console.log("Products for Sale Selected");
+                    console.log("View Products for Sale Selected");
+                    viewProducts();
                     break;
 
                 case "View Low Inventory":
@@ -72,12 +74,30 @@ function menuPrompt() {
                     console.log("Add New Product Selected");
                     break;
 
+                case "Exit Program":
+                    console.log("Exiting Program! Thank you for your hard work!");
+                    break;
+
                 default:
                     break;
             }
         })
 }
 
+//list every available item: the item IDs, names, prices, and quantities
+function viewProducts() {
+    openConnection();
+    connection.query("SELECT item_id, product_name, price, stock_quantity FROM products",
+        function (err, res) {
+            if (err) throw err;
+            for (let i = 0; i < res.length; i++) {
+                console.log("Product ID: " + res[i].item_id + " || " + "Product Name: " + res[i].product_name + " || " + "Price: " + res[i].price + " || " + "Quantity: " + res[i].stock_quantity);
+            }
+            closeConnection();
+            menuPrompt();
+        }
+    )
+}
 //==MAIN PROCESSES=========================================
 
 menuPrompt();
