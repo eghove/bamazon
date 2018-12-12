@@ -124,10 +124,50 @@ function viewLowInventory() {
 
 //display a prompt that will let the manager "add more" of any item currently in the store.
 function addInventory() {
+    inquirer
+    .prompt(
+        [
+            {
+                name: "stockThis",
+                type: "input",
+                message: "Please enter the Product ID of the item you would like to stock.",
+                validate: function (value) {
+                    if (isNaN(value) === false) {
+                        return true;
+                    }
+                    return "Please enter a number.";
+                }  
+            },
 
-    menuPrompt()
+            {
+                name: "howMuch",
+                type: "input",
+                message: "Please enter the quantity you'd like to add to existing stock.",
+                validate: function (value) {
+                    if (isNaN(value) === false) {
+                        return true;
+                    }
+                    return "Please enter a number.";
+                }  
+            }
+        ]
+    ).then(function(answer) {
+        connection.query("SELECT * FROM products WHERE item_id = ?",
+        [answer.stockThis],
+        function (err, res) {
+            if (err) throw err;
+            //tell the user what they are about to do
+            console.log("You are re-stocking: " + res[0].product_name + " with " + answer.howMuch + " additional units.");
+
+            //this menu prompt will likely be moved
+            menuPrompt()
+        })
+    })
 };
 
+function updateDB () {
+    
+}
 
 //allow the manager to add a completely new product to the store
 function addProduct() {
