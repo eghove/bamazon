@@ -91,14 +91,14 @@ function menuPrompt() {
 
 //list every available item: the item IDs, names, prices, and quantities
 function viewProducts() {
-    
+
     connection.query("SELECT item_id, product_name, price, stock_quantity FROM products",
         function (err, res) {
             if (err) throw err;
             for (let i = 0; i < res.length; i++) {
                 console.log("Product ID: " + res[i].item_id + " || " + "Product Name: " + res[i].product_name + " || " + "Price: " + res[i].price + " || " + "Quantity: " + res[i].stock_quantity);
             }
-            
+
             menuPrompt();
         }
     )
@@ -106,11 +106,11 @@ function viewProducts() {
 
 // list all items with an inventory count lower than five
 function viewLowInventory() {
-   
+
     connection.query("SELECT item_id, product_name, stock_quantity FROM products WHERE stock_quantity < 5",
         function (err, res) {
             if (err) throw err;
-            if (res.length===0) {
+            if (res.length === 0) {
                 console.log("No items with stock less than 5 items!");
             } else {
                 for (let i = 0; i < res.length; i++) {
@@ -125,96 +125,150 @@ function viewLowInventory() {
 //display a prompt that will let the manager "add more" of any item currently in the store.
 function addInventory() {
     inquirer
-    .prompt(
-        [
-            {
-                name: "stockThis",
-                type: "input",
-                message: "Please enter the Product ID of the item you would like to stock.",
-                validate: function (value) {
-                    if (isNaN(value) === false) {
-                        return true;
-                    }
-                    return "Please enter a number.";
-                }  
-            },
-
-            {
-                name: "howMuch",
-                type: "input",
-                message: "Please enter the quantity you'd like to add to existing stock.",
-                validate: function (value) {
-                    if (isNaN(value) === false) {
-                        return true;
-                    }
-                    return "Please enter a number.";
-                }  
-            }
-        ]
-    ).then(function(answer) {
-        connection.query("SELECT * FROM products WHERE item_id = ?",
-        [answer.stockThis],
-        function (err, res) {
-            if (err) throw err;
-            //tell the user what they are about to do
-            console.log("You are re-stocking: " + res[0].product_name + " with " + answer.howMuch + " additional units.");
-            let newTotalStock = parseInt(res[0].stock_quantity) + parseInt(answer.howMuch);
-            
-            updateDB(newTotalStock, answer.stockThis);
-
-            //this menu prompt will likely be moved
-            // menuPrompt()
-        })
-    })
-};
-
-function updateDB (param1, param2) {
-    let temp = parseInt(param1);
-    inquirer
-    .prompt(
-        {
-            name: "confirm",
-            type: "confirm",
-            message: "Are you sure you want to make this change?"
-        }
-    ).then(function(answer) {
-        if(answer.confirm) {
-            
-            connection.query("UPDATE products SET ? WHERE ?",
+        .prompt(
             [
                 {
-                    stock_quantity: temp
+                    name: "stockThis",
+                    type: "input",
+                    message: "Please enter the Product ID of the item you would like to stock.",
+                    validate: function (value) {
+                        if (isNaN(value) === false) {
+                            return true;
+                        }
+                        return "Please enter a number.";
+                    }
                 },
 
                 {
-                    item_id: param2
+                    name: "howMuch",
+                    type: "input",
+                    message: "Please enter the quantity you'd like to add to existing stock.",
+                    validate: function (value) {
+                        if (isNaN(value) === false) {
+                            return true;
+                        }
+                        return "Please enter a number.";
+                    }
                 }
-            ],
-            function(err) {
-                if (err) throw err;
-                console.log("Database updated!");
+            ]
+        ).then(function (answer) {
+            connection.query("SELECT * FROM products WHERE item_id = ?",
+                [answer.stockThis],
+                function (err, res) {
+                    if (err) throw err;
+                    //tell the user what they are about to do
+                    console.log("You are re-stocking: " + res[0].product_name + " with " + answer.howMuch + " additional units.");
+                    let newTotalStock = parseInt(res[0].stock_quantity) + parseInt(answer.howMuch);
+
+                    updateDB(newTotalStock, answer.stockThis);
+
+                    //this menu prompt will likely be moved
+                    // menuPrompt()
+                })
+        })
+};
+
+function updateDB(param1, param2) {
+    let temp = parseInt(param1);
+    inquirer
+        .prompt(
+            {
+                name: "confirm",
+                type: "confirm",
+                message: "Are you sure you want to make this change?"
+            }
+        ).then(function (answer) {
+            if (answer.confirm) {
+
+                connection.query("UPDATE products SET ? WHERE ?",
+                    [
+                        {
+                            stock_quantity: temp
+                        },
+
+                        {
+                            item_id: param2
+                        }
+                    ],
+                    function (err) {
+                        if (err) throw err;
+                        console.log("Database updated!");
+                        menuPrompt();
+                    }
+
+
+                )
+            } else {
+                console.log("Aborting update! Returning to main menu...");
                 menuPrompt();
             }
-            
-
-            )
-        } else {
-            console.log("Aborting update! Returning to main menu...");
-            menuPrompt();
         }
-    }
-    )
-    
+        )
+
 }
 
 //allow the manager to add a completely new product to the store
 function addProduct() {
-    
-    menuPrompt()
+    inquirer
+        .prompt(
+            [
+                {
+                    name: "productName",
+                    type: "input",
+                    message: "Name of Product You'd Like to Add"
+                },
+
+                {
+                    name: "initialQuantity",
+                    type: "input",
+                    message: "Initial Quantity?",
+                    validate: function (value) {
+                        if (isNaN(value) === false) {
+                            return true;
+                        }
+                        return "Please enter a number.";
+                    }
+
+                },
+
+                {
+                    name: "setPrice",
+                    type: "input",
+                    message: "What price are you selling this for?",
+                    validate: function (value) {
+                        if (isNaN(value) === false) {
+                            return true;
+                        }
+                        return "Please enter a number.";
+                    }
+                },
+
+                {
+                    name: "setDepartment",
+                    type: "input",
+                    message: "Department Category?"
+                }
+            ]
+        ).then(function (answer) {
+            connection.query("INSERT INTO products SET ?",
+            {
+                product_name: answer.productName,
+                price: answer.setPrice,
+                department_name: answer.setDepartment,
+                stock_quantity: answer.initialQuantity
+            }, 
+            function(err){
+                if (err) throw err;
+                console.log("New Product Added");
+                menuPrompt()
+            }
+        )
+        })
+
 };
 
 //logic for the first run
-function initialize () {
+function initialize() {
     //open the first connection
     openConnection();
     menuPrompt();
