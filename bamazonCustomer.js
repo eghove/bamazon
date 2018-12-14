@@ -126,6 +126,8 @@ function placeOrder(param1, param2) {
             } else {
                 //determines the total cost
                 let totalCost = param2 * result[0].price;
+                //changed it to two decimal fixed
+                totalCost = totalCost.toFixed(2);
                 //grabs the total stock
                 let totalStock = result[0].stock_quantity;
                 //sets the remaining stock after the purchase
